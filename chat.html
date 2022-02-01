@@ -1,0 +1,156 @@
+
+<script src=https://cdn.pubnub.com/sdk/javascript/pubnub.4.28.2.min.js></script>
+<script type="text/JavaScript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js?ver=1.4.2"></script>
+
+
+<html>
+    <style>
+        * {
+	margin: 0;
+	padding: 0;
+    }
+
+body, html {
+	height: 100%;
+}
+
+#myCanvas {
+	cursor: crosshair;
+    position: fixed;
+}
+    </style>
+    <head>
+
+    </head>
+    <body>
+        <h1>Your are the Sketcher!</h1>
+        <h2>Sketch a Hand Bag</h2>
+        <h4>But Remember the Wizard is watching! </h4>
+        <div><input id=input placeholder="message" /></div>
+        Chat Output
+        <div id=box></div>
+        <canvas id="myCanvas" style=" border: 1px solid blue;">
+            Sorry, your browser does not support HTML5 canvas technology.
+        </canvas>
+
+    </body>
+
+<script> (function() {
+    var pubnub = new PubNub({
+        publishKey: 'pub-c-13af43f8-22e9-4719-9740-48ce12de3c52',
+        subscribeKey: 'sub-c-297cd812-8155-11ec-9f2b-a2cedba671e8'
+    });
+    function $(id) {
+        return document.getElementById(id);
+    }
+    var box = $('box'),
+        input = $('input'),
+        channel = '10chat-demo';
+    
+    
+    pubnub.addListener({
+        message: function(obj) {
+            box.innerHTML = ('' + obj.message).replace(/[<>]/g, '') + '<br>' + box.innerHTML
+        }
+    });
+    pubnub.subscribe({
+        channels: [channel]
+    });
+    input.addEventListener('keyup', function(e) {
+        if ((e.keyCode || e.charCode) === 13) {
+            pubnub.publish({
+                channel: channel,
+                message: input.value,
+                x: (input.value = '')
+            });
+        }
+    });
+})();
+</script>
+<script>
+    window.onload = function() {
+	var myCanvas = document.getElementById("myCanvas");
+	var ctx = myCanvas.getContext("2d");
+    
+    // Fill Window Width and Height
+    myCanvas.width = window.innerWidth;
+	myCanvas.height = window.innerHeight;
+	
+	// Set Background Color
+    ctx.fillStyle="#fff";
+    ctx.fillRect(0,0,myCanvas.width,myCanvas.height);
+	
+    // Mouse Event Handlers
+	if(myCanvas){
+		var isDown = false;
+		var canvasX, canvasY;
+		ctx.lineWidth = 5;
+		
+		$(myCanvas)
+		.mousedown(function(e){
+			isDown = true;
+			ctx.beginPath();
+			canvasX = e.pageX - myCanvas.offsetLeft;
+			canvasY = e.pageY - myCanvas.offsetTop;
+			ctx.moveTo(canvasX, canvasY);
+		})
+		.mousemove(function(e){
+			if(isDown !== false) {
+				canvasX = e.pageX - myCanvas.offsetLeft;
+				canvasY = e.pageY - myCanvas.offsetTop;
+				ctx.lineTo(canvasX, canvasY);
+				ctx.strokeStyle = "#000";
+				ctx.stroke();
+			}
+		})
+		.mouseup(function(e){
+			isDown = false;
+			ctx.closePath();
+		});
+	}
+	
+	// Touch Events Handlers
+	draw = {
+		started: false,
+		start: function(evt) {
+
+			ctx.beginPath();
+			ctx.moveTo(
+				evt.touches[0].pageX,
+				evt.touches[0].pageY
+			);
+
+			this.started = true;
+
+		},
+		move: function(evt) {
+
+			if (this.started) {
+				ctx.lineTo(
+					evt.touches[0].pageX,
+					evt.touches[0].pageY
+				);
+
+				ctx.strokeStyle = "#000";
+				ctx.lineWidth = 5;
+				ctx.stroke();
+			}
+
+		},
+		end: function(evt) {
+			this.started = false;
+		}
+	};
+	
+	// Touch Events
+	myCanvas.addEventListener('touchstart', draw.start, false);
+	myCanvas.addEventListener('touchend', draw.end, false);
+	myCanvas.addEventListener('touchmove', draw.move, false);
+	
+	// Disable Page Move
+	document.body.addEventListener('touchmove',function(evt){
+		evt.preventDefault();
+	},false);
+};
+</script>
+</html>
