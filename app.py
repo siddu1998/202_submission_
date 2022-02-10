@@ -8,7 +8,7 @@ app = Flask(__name__)
 def getStory():
     
     data = request.json['data']
-    print(data)
+    # print(data)
     generator = pipeline('text-generation', model='gpt2')
     set_seed(42)
     story=generator(data, max_length=100, num_return_sequences=1)
