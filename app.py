@@ -5,18 +5,11 @@ from flask import request
 app = Flask(__name__)
 
 
-def encrypt(text,s):
-    result = ""
-    for i in range(len(text)):
-        char = text[i]
-        # Encrypt uppercase characters in plain text      
-        if (char.isupper()):
-            result += chr((ord(char) + s-65) % 26 + 65)
-        # Encrypt lowercase characters in plain text
-        else:
-            result += chr((ord(char) + s - 97) % 26 + 97)
-        return result
-
+def encrypt(plaintext, shift):
+    alphabet = string.ascii_lowercase
+    shifted_alphabet = alphabet[shift:] + alphabet[:shift]
+    table = string.maketrans(alphabet, shifted_alphabet)
+    return plaintext.translate(table)
 
 @app.route("/getStory")
 def getStory():
