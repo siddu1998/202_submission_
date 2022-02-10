@@ -13,7 +13,7 @@ def getStory():
     # set_seed(42)
     # story=generator(data, max_length=100, num_return_sequences=1)
     # print(story)
-    return {'story':story}
+    return {'story':"story"}
 
 if __name__ == '__main__':
    app.run()
