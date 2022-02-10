@@ -12,8 +12,9 @@ def getStory():
     # generator = pipeline('text-generation', model='gpt2')
     # set_seed(42)
     # story=generator(data, max_length=100, num_return_sequences=1)
-    summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
-    story = summarizer(data, max_length=130, min_length=30, do_sample=False)
+    # summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
+    # story = summarizer(data, max_length=130, min_length=30, do_sample=False)
+    story = data.lower()
     return {'story':story}
 
 if __name__ == '__main__':
