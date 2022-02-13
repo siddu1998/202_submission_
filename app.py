@@ -1,30 +1,27 @@
 from transformers import pipeline, set_seed
 from flask import Flask
 from flask import request
+from flask_cors import CORS
+import json
 
 app = Flask(__name__)
+CORS(app)
 
 
-def encrypt(plaintext, shift):
-    alphabet = string.ascii_lowercase
-    shifted_alphabet = alphabet[shift:] + alphabet[:shift]
-    table = string.maketrans(alphabet, shifted_alphabet)
-    return plaintext.translate(table)
+#ideally should have been a read from a database 
+#(had little time to do it so just did a global variable)
+# Not the most ideal way to do it, since it resets everytime the app crashes or heroku dyno goes down
 
-@app.route("/getStory")
-def getStory():
-    
-    data  = request.json['data']
-    seed = request.json['seed'] 
+violation = 0 
 
-    # print(data)
-    # generator = pipeline('text-generation', model='gpt2')
-    # set_seed(42)
-    # story=generator(data, max_length=100, num_return_sequences=1)
+@app.route('/add_violation', methods = ['POST'])
+def add_violation():
+    global violation
+    data = json.loads(str(request.data, encoding='utf-8'))
+    violation+=data['violations']
+    return {"violations":violation}
 
-    story = encrypt(data,seed)
-    return {'story':story}
 
 if __name__ == '__main__':
-   app.run()
    app.run(debug=True)
+   app.run()
