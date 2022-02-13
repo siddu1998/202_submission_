@@ -1,4 +1,3 @@
-from transformers import pipeline, set_seed
 from flask import Flask
 from flask import request
 from flask_cors import CORS
